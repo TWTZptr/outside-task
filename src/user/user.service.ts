@@ -1,19 +1,22 @@
 import { Injectable } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './user.model';
 import { InjectModel } from '@nestjs/sequelize';
+import { FindOptions } from 'sequelize/types/model';
+import { CreateUserDto } from './dto/create-user.dto';
 
 @Injectable()
 export class UserService {
   constructor(@InjectModel(User) private readonly userRepository: typeof User) {
   }
 
-  create(createUserDto: CreateUserDto): Promise<User> {
-    return this.userRepository.create(createUserDto);
+  async create(createUserDto: CreateUserDto): Promise<User> {
+    const newUser = await this.userRepository.create(createUserDto);
+    newUser.password = undefined;
+    return newUser;
   }
 
-  findOne(uid: string): Promise<User> {
+  findOneByUid(uid: string): Promise<User> {
     return this.userRepository.findByPk(uid);
   }
 
@@ -23,5 +26,9 @@ export class UserService {
 
   remove(uid: string) {
     return this.userRepository.destroy({ where: { uid } });
+  }
+
+  async findOne(options: FindOptions<User>): Promise<User> {
+    return this.userRepository.findOne(options);
   }
 }

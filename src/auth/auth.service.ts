@@ -1,9 +1,14 @@
-import { ConflictException, Injectable } from "@nestjs/common";
+import { ConflictException, ForbiddenException, Injectable } from "@nestjs/common";
 import { SigninDto } from "./dto/signin.dto";
 import { User } from "../user/user.model";
 import { UserService } from "../user/user.service";
 import { Op } from "sequelize";
-import { NOT_UNIQUE_EMAIL_MSG, NOT_UNIQUE_NICKNAME_MSG } from "./constants";
+import {
+  ACCESS_TOKEN_REQUIRED_MSG,
+  BROKEN_ACCESS_TOKEN_MSG,
+  NOT_UNIQUE_EMAIL_MSG,
+  NOT_UNIQUE_NICKNAME_MSG
+} from "./constants";
 import { PasswordService } from "../password/password.service";
 import { JwtService } from "@nestjs/jwt";
 import { TokenPair } from "../types/TokenPair";
@@ -65,5 +70,24 @@ export class AuthService {
   getTokenExpireTime(): number {
     return +this.configService.get<string>("ACCESS_TOKEN_EXPIRATION_TIME") / 1000;
   }
-}
 
+  async refresh(accessToken: string, userPayload: JwtPayload): Promise<TokenPair> {
+    if (!accessToken) {
+      throw new ForbiddenException(ACCESS_TOKEN_REQUIRED_MSG);
+    }
+
+    const accessTokenPayload = this.jwtService.decode(accessToken);
+
+    if (typeof accessTokenPayload === "string" || userPayload.uid !== accessTokenPayload.uid) {
+      throw new ForbiddenException(BROKEN_ACCESS_TOKEN_MSG);
+    }
+
+    const user = await this.userService.findOneByUid(userPayload.uid);
+
+    if (!user) {
+      throw new ForbiddenException(BROKEN_ACCESS_TOKEN_MSG);
+    }
+
+    return this.generateTokenPair({ uid: user.uid });
+  }
+}

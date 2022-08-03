@@ -14,7 +14,7 @@ export class UserController {
   @UseGuards(JwtAuthGuard)
   @Get()
   findOne(@AuthorizedUser() userPayload: JwtPayload) {
-    return this.userService.findOneByUid(userPayload.uid);
+    return this.userService.findOneByUid(userPayload.uid, ["uid"]);
   }
 
   @UseGuards(JwtAuthGuard)

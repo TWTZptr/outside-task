@@ -24,12 +24,11 @@ export class UserService {
     return this.userRepository.findByPk(uid);
   }
 
-  async findOneByUid(uid: string): Promise<User> {
-    const user = await this.userRepository.findByPk(uid);
+  async findOneByUid(uid: string, excludeFields: string[] = []): Promise<User> {
+    const user = await this.userRepository.findByPk(uid, { attributes: { exclude: ["password", ...excludeFields] } });
     if (!user) {
       throw new NotFoundException(UNEXIST_USER_MSG);
     }
-    user.password = undefined;
     return user;
   }
 
@@ -66,10 +65,8 @@ export class UserService {
       updateUserDto.password = await this.passwordService.hash(updateUserDto.password);
     }
 
-    const user = await userToUpdate.update(updateUserDto);
-    user.password = undefined;
-
-    return user;
+    await userToUpdate.update(updateUserDto);
+    return this.findOne({ where: { uid: userToUpdate.uid }, attributes: { exclude: ["password", "uid"] } });
   }
 
   async tryRemove(uid: string): Promise<void> {

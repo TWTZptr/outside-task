@@ -18,7 +18,7 @@ import { PasswordModule } from './password/password.module';
     }),
     UserModule,
     AuthModule,
-    PasswordModule
+    PasswordModule,
   ],
   controllers: [AppController],
   providers: [AppService],

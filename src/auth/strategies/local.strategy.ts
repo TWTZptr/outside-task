@@ -2,7 +2,7 @@ import { Injectable, UnauthorizedException } from "@nestjs/common";
 import { PassportStrategy } from "@nestjs/passport";
 import { Strategy } from "passport-local";
 import { AuthService } from "../auth.service";
-import { JwtPayload } from "../../types/jwtPayload";
+import { JwtPayload } from "../../types/JwtPayload";
 import { INVALID_CREDENTIALS_MSG } from "../constants";
 
 @Injectable()

@@ -8,7 +8,7 @@ import { PasswordService } from "../password/password.service";
 import { JwtService } from "@nestjs/jwt";
 import { TokenPair } from "../types/TokenPair";
 import { ConfigService } from "@nestjs/config";
-import { JwtPayload } from "../types/jwtPayload";
+import { JwtPayload } from "../types/JwtPayload";
 
 @Injectable()
 export class AuthService {

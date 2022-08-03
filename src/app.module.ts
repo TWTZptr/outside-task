@@ -8,6 +8,7 @@ import { SequelizeModule } from '@nestjs/sequelize';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { PasswordModule } from './password/password.module';
+import { TagModule } from './tag/tag.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { PasswordModule } from './password/password.module';
     UserModule,
     AuthModule,
     PasswordModule,
+    TagModule,
   ],
   controllers: [AppController],
   providers: [AppService],

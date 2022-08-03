@@ -1,80 +1,81 @@
-'use strict';
+"use strict";
 
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('User', {
+    await queryInterface.createTable("User", {
       uid: {
         type: Sequelize.UUID,
         allowNull: false,
         primaryKey: true,
-        defaultValue: Sequelize.UUIDV4,
+        defaultValue: Sequelize.UUIDV4
       },
       email: {
         type: Sequelize.STRING(100),
         unique: true,
-        allowNull: false,
+        allowNull: false
       },
       nickname: {
         type: Sequelize.STRING(30),
         unique: true,
-        allowNull: false,
+        allowNull: false
       },
       password: {
         type: Sequelize.STRING,
-        allowNull: false,
-      },
+        allowNull: false
+      }
     });
 
-    await queryInterface.createTable('Tag', {
+    await queryInterface.createTable("Tag", {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER,
+        type: Sequelize.INTEGER
       },
       creator: {
         allowNull: false,
-        type: Sequelize.UUID,
+        type: Sequelize.UUID
       },
       name: {
         type: Sequelize.STRING(40),
-        allowNull: false,
+        unique: true,
+        allowNull: false
       },
       sortOrder: {
         type: Sequelize.INTEGER,
         allowNull: false,
-        defaultValue: 0,
-      },
+        defaultValue: 0
+      }
     });
 
-    await queryInterface.createTable('UserTag', {
+    await queryInterface.createTable("UserTag", {
       user_uid: {
         type: Sequelize.UUID,
         allowNull: false,
         primaryKey: true,
-        onDelete: 'CASCADE',
+        onDelete: "CASCADE",
         references: {
-          model: 'User',
-          key: 'uid',
-        },
+          model: "User",
+          key: "uid"
+        }
       },
 
       tag_id: {
         type: Sequelize.INTEGER,
         allowNull: false,
         primaryKey: true,
-        onDelete: 'CASCADE',
+        onDelete: "CASCADE",
         references: {
-          model: 'Tag',
-          key: 'id',
-        },
-      },
+          model: "Tag",
+          key: "id"
+        }
+      }
     });
   },
 
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('UserTag');
-    await queryInterface.dropTable('Tag');
-    await queryInterface.dropTable('User');
-  },
+    await queryInterface.dropTable("UserTag");
+    await queryInterface.dropTable("Tag");
+    await queryInterface.dropTable("User");
+  }
 };

@@ -82,7 +82,7 @@ export class AuthService {
       throw new ForbiddenException(BROKEN_ACCESS_TOKEN_MSG);
     }
 
-    const user = await this.userService.findOneByUid(userPayload.uid);
+    const user = await this.userService.findOneByUidWithPassword(userPayload.uid);
 
     if (!user) {
       throw new ForbiddenException(BROKEN_ACCESS_TOKEN_MSG);

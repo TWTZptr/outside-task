@@ -1,4 +1,4 @@
-import { ConflictException, Injectable, NotFoundException } from "@nestjs/common";
+import { BadRequestException, ConflictException, Injectable, NotFoundException } from "@nestjs/common";
 import { UpdateUserDto } from "./dto/update-user.dto";
 import { User } from "./user.model";
 import { InjectModel } from "@nestjs/sequelize";
@@ -68,12 +68,17 @@ export class UserService {
 
     const user = await userToUpdate.update(updateUserDto);
     user.password = undefined;
-    
+
     return user;
   }
 
-  remove(uid: string) {
-    return this.userRepository.destroy({ where: { uid } });
+  async tryRemove(uid: string): Promise<void> {
+    const user = await this.findOneByUid(uid);
+    if (!user) {
+      throw new BadRequestException(UNEXIST_USER_MSG);
+    }
+
+    await user.destroy();
   }
 
   async findOne(options: FindOptions<User>): Promise<User> {

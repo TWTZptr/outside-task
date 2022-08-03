@@ -1,9 +1,10 @@
-import { Body, Controller, Delete, Get, Param, Put, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Put, Res, UseGuards } from "@nestjs/common";
 import { UserService } from "./user.service";
 import { UpdateUserDto } from "./dto/update-user.dto";
 import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
 import { AuthorizedUser } from "../auth/authorized-user.decorator";
 import { JwtPayload } from "../types/JwtPayload";
+import { Response } from "express";
 
 @Controller("user")
 export class UserController {
@@ -22,8 +23,10 @@ export class UserController {
     return this.userService.update(userPayload.uid, updateUserDto);
   }
 
-  @Delete(":id")
-  remove(@Param("id") id: string) {
-    return this.userService.remove(id);
+  @UseGuards(JwtAuthGuard)
+  @Delete()
+  remove(@AuthorizedUser() userPayload: JwtPayload, @Res({ passthrough: true }) response: Response) {
+    response.clearCookie("refreshToken");
+    return this.userService.tryRemove(userPayload.uid);
   }
 }

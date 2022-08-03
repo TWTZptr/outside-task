@@ -66,7 +66,10 @@ export class UserService {
       updateUserDto.password = await this.passwordService.hash(updateUserDto.password);
     }
 
-    return userToUpdate.update(updateUserDto);
+    const user = await userToUpdate.update(updateUserDto);
+    user.password = undefined;
+    
+    return user;
   }
 
   remove(uid: string) {

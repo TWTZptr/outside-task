@@ -1,6 +1,7 @@
-import { BelongsTo, Column, DataType, Model, Table } from "sequelize-typescript";
+import { BelongsTo, BelongsToMany, Column, DataType, Model, Table } from "sequelize-typescript";
 import { MAX_TAG_NAME_LENGTH } from "./constants";
 import { User } from "../user/user.model";
+import { UserTag } from "../userTag/user-tag.model";
 
 interface TagCreationAttributes {
   creator: string;
@@ -29,4 +30,7 @@ export class Tag extends Model<Tag, TagCreationAttributes> {
 
   @BelongsTo(() => User, "creator")
   tagCreator: User;
+
+  @BelongsToMany(() => User, () => UserTag)
+  users: Array<User & { UserTag: UserTag }>;
 }

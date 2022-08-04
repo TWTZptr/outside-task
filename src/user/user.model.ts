@@ -1,6 +1,7 @@
-import { Column, DataType, HasMany, Model, Table } from "sequelize-typescript";
+import { BelongsToMany, Column, DataType, HasMany, Model, Table } from "sequelize-typescript";
 import { MAX_USER_EMAIL_LENGTH, MAX_USER_NICKNAME_LENGTH } from "./constants";
 import { Tag } from "../tag/tag.model";
+import { UserTag } from "../userTag/user-tag.model";
 
 interface UserCreationAttributes {
   email: string;
@@ -24,4 +25,7 @@ export class User extends Model<User, UserCreationAttributes> {
 
   @HasMany(() => Tag, "creator")
   createdTags: Tag[];
+
+  @BelongsToMany(() => Tag, () => UserTag)
+  tags: Array<Tag & { UserTag: UserTag }>;
 }

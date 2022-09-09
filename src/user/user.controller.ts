@@ -72,4 +72,11 @@ export class UserController {
   ) {
     return this.userService.deleteTagFromUser(userPayload.uid, tagId);
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('tag/my')
+  async getUserTags(@AuthorizedUser() userPayload: JwtPayload) {
+    const tags = await this.userService.getUserTags(userPayload.uid);
+    return { tags };
+  }
 }

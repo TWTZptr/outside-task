@@ -18,7 +18,8 @@ import { PasswordService } from '../password/password.service';
 import { SigninDto } from '../auth/dto/signin.dto';
 import { TagService } from 'src/tag/tag.service';
 import { UserTagService } from 'src/userTag/user-tag.service';
-import { Tag } from 'src/tag/tag.model';
+import { PublicTagInfoDto } from './dto/public-tag-info.dto';
+import { mapTagToPublicTagInfo } from 'src/helpers/TagToPublicTagInfoDtoMapper';
 
 @Injectable()
 export class UserService {
@@ -127,13 +128,16 @@ export class UserService {
     const user = await this.findOneByUid(userUid);
     const tags = await user.$get('tags');
 
-    return tags.map((tag) => {
-      const { id, name, sortOrder } = tag.get();
-      return { id, name, sortOrder };
-    });
+    return mapTagToPublicTagInfo(tags);
   }
 
   async deleteTagFromUser(userUid: string, tagId: number): Promise<void> {
     return this.userTagService.deleteTagFromUserIfExist(userUid, tagId);
+  }
+
+  async getUserTags(userUid: string): Promise<PublicTagInfoDto[]> {
+    const user = await this.findOneByUid(userUid);
+    const tags = await user.$get('tags', {});
+    return mapTagToPublicTagInfo(tags);
   }
 }

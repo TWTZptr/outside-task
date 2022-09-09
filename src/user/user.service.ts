@@ -122,7 +122,7 @@ export class UserService {
   async tryToAddTagsToUser(
     userUid: string,
     tagIds: number[],
-  ): Promise<{ id; name; sortOrder }[]> {
+  ): Promise<{ id: number; name: string; sortOrder: number }[]> {
     await this.userTagService.addTagsToUser(userUid, tagIds);
     const user = await this.findOneByUid(userUid);
     const tags = await user.$get('tags');
@@ -131,5 +131,9 @@ export class UserService {
       const { id, name, sortOrder } = tag.get();
       return { id, name, sortOrder };
     });
+  }
+
+  async deleteTagFromUser(userUid: string, tagId: number): Promise<void> {
+    return this.userTagService.deleteTagFromUserIfExist(userUid, tagId);
   }
 }

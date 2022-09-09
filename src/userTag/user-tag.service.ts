@@ -6,6 +6,7 @@ import {
   ADD_UNEXIST_TAG_MSG,
 } from 'src/user/constants';
 import sequelize from 'sequelize';
+import { USER_DOES_NOT_HAVE_TAG_MSG } from 'src/user/constants';
 
 @Injectable()
 export class UserTagService {
@@ -28,5 +29,19 @@ export class UserTagService {
 
       throw err;
     }
+  }
+
+  async deleteTagFromUserIfExist(
+    userUid: string,
+    tagId: number,
+  ): Promise<void> {
+    const userTag = await this.userTagRepository.findOne({
+      where: { userUid, tagId },
+    });
+    if (!userTag) {
+      throw new BadRequestException(USER_DOES_NOT_HAVE_TAG_MSG);
+    }
+
+    await userTag.destroy();
   }
 }

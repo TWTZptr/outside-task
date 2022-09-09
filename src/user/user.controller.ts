@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  Param,
   Post,
   Put,
   Req,
@@ -61,5 +62,14 @@ export class UserController {
       addTagsToUserDto.tags,
     );
     return { tags };
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Delete('tag/:id')
+  async removeTagFromUser(
+    @Param('id') tagId: number,
+    @AuthorizedUser() userPayload: JwtPayload,
+  ) {
+    return this.userService.deleteTagFromUser(userPayload.uid, tagId);
   }
 }

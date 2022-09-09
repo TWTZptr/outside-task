@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ConflictException,
   ForbiddenException,
   Injectable,
@@ -91,5 +92,12 @@ export class TagService {
   async remove(id: number, userUid: string): Promise<void> {
     const tag = await this.findOneByIdWithOwnerCheck(id, userUid);
     await tag.destroy();
+  }
+
+  async isTagExistsCheck(id: number): Promise<void> {
+    const tag = await this.tagRepository.findByPk(id);
+    if (!tag) {
+      throw new BadRequestException(`Tag with id ${id} was not found. Operation is not successful`);
+    }
   }
 }

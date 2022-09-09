@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  Post,
   Put,
   Req,
   Res,
@@ -15,6 +16,7 @@ import { AuthorizedUser } from '../auth/authorized-user.decorator';
 import { JwtPayload } from '../types/JwtPayload';
 import { Response } from 'express';
 import { TagService } from 'src/tag/tag.service';
+import { AddTagsToUserDto } from './dto/add-tags-to-user.dto';
 
 @Controller('user')
 export class UserController {
@@ -46,5 +48,18 @@ export class UserController {
   ) {
     response.clearCookie('refreshToken');
     await this.userService.tryRemoveUserAndHisTags(userPayload.uid);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('tag')
+  async addTagsToUser(
+    @AuthorizedUser() userPayload: JwtPayload,
+    @Body() addTagsToUserDto: AddTagsToUserDto,
+  ) {
+    const tags = await this.userService.tryToAddTagsToUser(
+      userPayload.uid,
+      addTagsToUserDto.tags,
+    );
+    return { tags };
   }
 }

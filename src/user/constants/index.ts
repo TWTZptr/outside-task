@@ -4,4 +4,6 @@ export const MAX_USER_NICKNAME_LENGTH: number = 30;
 export const MIN_USER_NICKNAME_LENGTH = 3;
 export const MAX_USER_PASSWORD_LENGTH: number = 100;
 export const MIN_USER_PASSWORD_LENGTH: number = 8;
-export const UNEXIST_USER_MSG: string = "User does not exist";
+export const UNEXIST_USER_MSG: string = 'User does not exist';
+export const USER_ALREADY_HAS_TAG_MSG: string = 'User already has that tag(s)';
+export const ADD_UNEXIST_TAG_MSG: string = 'Tag(s) with specified id(s) does not exist'

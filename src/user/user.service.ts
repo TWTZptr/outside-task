@@ -17,6 +17,8 @@ import {
 import { PasswordService } from '../password/password.service';
 import { SigninDto } from '../auth/dto/signin.dto';
 import { TagService } from 'src/tag/tag.service';
+import { UserTagService } from 'src/userTag/user-tag.service';
+import { Tag } from 'src/tag/tag.model';
 
 @Injectable()
 export class UserService {
@@ -24,6 +26,7 @@ export class UserService {
     @InjectModel(User) private readonly userRepository: typeof User,
     private readonly passwordService: PasswordService,
     private readonly tagService: TagService,
+    private readonly userTagService: UserTagService,
   ) {}
 
   async create(createUserDto: SigninDto): Promise<User> {
@@ -114,5 +117,19 @@ export class UserService {
     const userTags = await user.$get('createdTags');
     userTags.forEach((tag) => tagRemovePromises.push(tag.destroy()));
     await Promise.all(tagRemovePromises);
+  }
+
+  async tryToAddTagsToUser(
+    userUid: string,
+    tagIds: number[],
+  ): Promise<{ id; name; sortOrder }[]> {
+    await this.userTagService.addTagsToUser(userUid, tagIds);
+    const user = await this.findOneByUid(userUid);
+    const tags = await user.$get('tags');
+
+    return tags.map((tag) => {
+      const { id, name, sortOrder } = tag.get();
+      return { id, name, sortOrder };
+    });
   }
 }

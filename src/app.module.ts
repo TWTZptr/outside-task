@@ -24,6 +24,6 @@ import { UserTagService } from './userTag/user-tag.service';
     UserTagModule,
   ],
   controllers: [],
-  providers: [UserTagService],
+  providers: [],
 })
 export class AppModule {}

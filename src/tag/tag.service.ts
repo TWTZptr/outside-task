@@ -1,20 +1,31 @@
-import { ConflictException, ForbiddenException, Injectable, NotFoundException } from "@nestjs/common";
-import { CreateTagDto } from "./dto/create-tag.dto";
-import { UpdateTagDto } from "./dto/update-tag.dto";
-import { InjectModel } from "@nestjs/sequelize";
-import { Tag } from "./tag.model";
-import { TagWithCreatorDto } from "./dto/tag-with-creator.dto";
-import { NOT_UNIQUE_TAG_NAME_MSG, UNEXIST_TAG_ID_MSG, USER_IS_NOT_OWNER_OF_TAG_MSG } from "./constants";
-import { FindOptions } from "sequelize/types/model";
+import {
+  ConflictException,
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import { CreateTagDto } from './dto/create-tag.dto';
+import { UpdateTagDto } from './dto/update-tag.dto';
+import { InjectModel } from '@nestjs/sequelize';
+import { Tag } from './tag.model';
+import { TagWithCreatorDto } from './dto/tag-with-creator.dto';
+import {
+  NOT_UNIQUE_TAG_NAME_MSG,
+  UNEXIST_TAG_ID_MSG,
+  USER_IS_NOT_OWNER_OF_TAG_MSG,
+} from './constants';
+import { FindOptions } from 'sequelize/types/model';
 
 @Injectable()
 export class TagService {
-  constructor(@InjectModel(Tag) private readonly tagRepository: typeof Tag) {
-  }
+  constructor(@InjectModel(Tag) private readonly tagRepository: typeof Tag) {}
 
   async create(createTagDto: CreateTagDto, creatorUID: string): Promise<Tag> {
     await this.isTagNameUniqueCheck(createTagDto.name);
-    const newTag = await this.tagRepository.create({ ...createTagDto, creator: creatorUID });
+    const newTag = await this.tagRepository.create({
+      ...createTagDto,
+      creator: creatorUID,
+    });
     newTag.creator = undefined;
     return newTag;
   }
@@ -35,15 +46,18 @@ export class TagService {
     if (!tag) {
       throw new NotFoundException(UNEXIST_TAG_ID_MSG);
     }
-    const tagCreator = await tag.$get("tagCreator");
+    const tagCreator = await tag.$get('tagCreator');
     return {
       name: tag.name,
       sortOrder: tag.sortOrder,
-      creator: { uid: tagCreator.uid, nickname: tagCreator.nickname }
+      creator: { uid: tagCreator.uid, nickname: tagCreator.nickname },
     };
   }
 
-  async findOneByIdWithOwnerCheck(tagId: number, userUid: string): Promise<Tag> {
+  async findOneByIdWithOwnerCheck(
+    tagId: number,
+    userUid: string,
+  ): Promise<Tag> {
     const tag = await this.tagRepository.findByPk(tagId);
     if (!tag) {
       throw new NotFoundException(UNEXIST_TAG_ID_MSG);
@@ -56,17 +70,21 @@ export class TagService {
     return tag;
   }
 
-  async updateWithOwnerCheck(id: number, updateTagDto: UpdateTagDto, userUid: string): Promise<TagWithCreatorDto> {
+  async updateWithOwnerCheck(
+    id: number,
+    updateTagDto: UpdateTagDto,
+    userUid: string,
+  ): Promise<TagWithCreatorDto> {
     const tag = await this.findOneByIdWithOwnerCheck(id, userUid);
     if (updateTagDto.name) {
       await this.isTagNameUniqueCheck(updateTagDto.name);
     }
     const newTag = await tag.update(updateTagDto);
-    const tagCreator = await newTag.$get("tagCreator");
+    const tagCreator = await newTag.$get('tagCreator');
     return {
       creator: { nickname: tagCreator.nickname, uid: tagCreator.uid },
       name: newTag.name,
-      sortOrder: newTag.sortOrder
+      sortOrder: newTag.sortOrder,
     };
   }
 

@@ -6,7 +6,6 @@ import {
   Param,
   Post,
   Put,
-  Req,
   Res,
   UseGuards,
 } from '@nestjs/common';
@@ -29,7 +28,7 @@ export class UserController {
   @UseGuards(JwtAuthGuard)
   @Get()
   findOne(@AuthorizedUser() userPayload: JwtPayload) {
-    return this.userService.findOneByUid(userPayload.uid, ['uid']);
+    return this.userService.getUserWithTags(userPayload.uid);
   }
 
   @UseGuards(JwtAuthGuard)

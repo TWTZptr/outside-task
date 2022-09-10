@@ -16,17 +16,16 @@ import {
 } from '../auth/constants';
 import { PasswordService } from '../password/password.service';
 import { SigninDto } from '../auth/dto/signin.dto';
-import { TagService } from 'src/tag/tag.service';
 import { UserTagService } from 'src/userTag/user-tag.service';
 import { PublicTagInfoDto } from './dto/public-tag-info.dto';
 import { mapTagToPublicTagInfo } from 'src/helpers/TagToPublicTagInfoDtoMapper';
+import { UserModule } from './user.module';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectModel(User) private readonly userRepository: typeof User,
     private readonly passwordService: PasswordService,
-    private readonly tagService: TagService,
     private readonly userTagService: UserTagService,
   ) {}
 
@@ -48,6 +47,19 @@ export class UserService {
     if (!user) {
       throw new NotFoundException(UNEXIST_USER_MSG);
     }
+    return user;
+  }
+
+  async getUserWithTags(userUid: string): Promise<User> {
+    const user = await this.userRepository.findByPk(userUid, {
+      attributes: { exclude: ['password', 'uid'] },
+      include: ['tags'],
+    });
+
+    if (!user) {
+      throw new NotFoundException(UNEXIST_USER_MSG);
+    }
+
     return user;
   }
 

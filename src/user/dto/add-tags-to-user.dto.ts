@@ -1,6 +1,9 @@
-import { IsNumber, IsNumberString } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger/dist/decorators';
 
 export class AddTagsToUserDto {
-  @IsNumberString({}, { each: true })
+  @ApiProperty({
+    example: "['1', '2']",
+    description: 'id тэгов, добавляемых пользователю',
+  })
   tags: number[];
 }

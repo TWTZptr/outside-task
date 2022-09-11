@@ -15,22 +15,25 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { AuthorizedUser } from '../auth/authorized-user.decorator';
 import { JwtPayload } from '../types/JwtPayload';
 import { Response } from 'express';
-import { TagService } from 'src/tag/tag.service';
 import { AddTagsToUserDto } from './dto/add-tags-to-user.dto';
+import { ApiOperation, ApiResponse } from '@nestjs/swagger/dist/decorators';
+import { UserWithPublicTagsDto } from './dto/user-with-public-tags.dto';
+import { User } from './user.model';
 
 @Controller('user')
 export class UserController {
-  constructor(
-    private readonly userService: UserService,
-    private readonly tagServce: TagService,
-  ) {}
+  constructor(private readonly userService: UserService) {}
 
+  @ApiOperation({ summary: 'Получение данных о юзере с его тэгами' })
+  @ApiResponse({ status: 200, type: UserWithPublicTagsDto })
   @UseGuards(JwtAuthGuard)
   @Get()
   findOne(@AuthorizedUser() userPayload: JwtPayload) {
     return this.userService.getUserWithTags(userPayload.uid);
   }
 
+  @ApiOperation({ summary: 'Обновление данных о юзере' })
+  @ApiResponse({ status: 200, type: User })
   @UseGuards(JwtAuthGuard)
   @Put()
   update(
@@ -40,6 +43,8 @@ export class UserController {
     return this.userService.update(userPayload.uid, updateUserDto);
   }
 
+  @ApiOperation({ summary: 'Удаление юзера' })
+  @ApiResponse({ status: 200 })
   @UseGuards(JwtAuthGuard)
   @Delete()
   async remove(
@@ -50,12 +55,18 @@ export class UserController {
     await this.userService.tryRemoveUserAndHisTags(userPayload.uid);
   }
 
+  @ApiOperation({ summary: 'Добавление тэгов к юзеру' })
+  @ApiResponse({ status: 200 })
   @UseGuards(JwtAuthGuard)
   @Post('tag')
   async addTagsToUser(
     @AuthorizedUser() userPayload: JwtPayload,
     @Body() addTagsToUserDto: AddTagsToUserDto,
   ) {
+    if (!Array.isArray(addTagsToUserDto.tags)) {
+      addTagsToUserDto.tags = [addTagsToUserDto.tags];
+    }
+
     const tags = await this.userService.tryToAddTagsToUser(
       userPayload.uid,
       addTagsToUserDto.tags,
@@ -63,6 +74,8 @@ export class UserController {
     return { tags };
   }
 
+  @ApiOperation({ summary: 'Удаление тегов от юзера' })
+  @ApiResponse({ status: 200 })
   @UseGuards(JwtAuthGuard)
   @Delete('tag/:id')
   async removeTagFromUser(
@@ -72,6 +85,8 @@ export class UserController {
     return this.userService.deleteTagFromUser(userPayload.uid, tagId);
   }
 
+  @ApiOperation({ summary: 'Получение тэгов юзера' })
+  @ApiResponse({ status: 200 })
   @UseGuards(JwtAuthGuard)
   @Get('tag/my')
   async getUserTags(@AuthorizedUser() userPayload: JwtPayload) {

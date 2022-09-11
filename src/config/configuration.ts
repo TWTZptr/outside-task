@@ -8,10 +8,10 @@ export default () => ({
     REFRESH_TOKEN_SECRET: process.env.REFRESH_TOKEN_SECRET,
   },
   DB: {
-    USERNAME: process.env.DB_USERNAME,
-    PASSWORD: process.env.DB_PASSWORD,
-    DATABASE: process.env.DB_DATABASE,
-    HOST: process.env.DB_HOST,
-    PORT: process.env.DB_PORT,
+    USERNAME: process.env.POSTGRES_USER,
+    PASSWORD: process.env.POSTGRESS_PASSWORD,
+    DATABASE: process.env.POSTGRES_DB,
+    HOST: process.env.POSTGRES_HOST,
+    PORT: process.env.POSTGRESS_PORT,
   },
 });

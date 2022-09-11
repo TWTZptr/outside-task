@@ -1,0 +1,26 @@
+version: '3.0'
+
+services:
+  outside-task-backend:
+    container_name: outside-task-backend
+    build:
+      context: .
+    ports:
+      - '3000:3000'
+    depends_on:
+      - outside-task-db
+    command: yarn start:dev
+    restart: always
+    env_file:
+      - .env
+
+  outside-task-db:
+    container_name: outside-task-db
+    image: postgres
+    ports:
+      - '5432:5432'
+    restart: always
+    volumes:
+      - ./src/pgdata/volume:/var/lib/postgresql/data
+    env_file:
+      - .env

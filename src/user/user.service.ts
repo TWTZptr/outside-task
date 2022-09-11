@@ -17,9 +17,9 @@ import {
 import { PasswordService } from '../password/password.service';
 import { SigninDto } from '../auth/dto/signin.dto';
 import { UserTagService } from 'src/userTag/user-tag.service';
-import { PublicTagInfoDto } from './dto/public-tag-info.dto';
+import { PublicTagInfoDto } from '../tag/dto/public-tag-info.dto';
 import { mapTagToPublicTagInfo } from 'src/helpers/TagToPublicTagInfoDtoMapper';
-import { UserModule } from './user.module';
+import { UserWithPublicTagsDto } from './dto/user-with-public-tags.dto';
 
 @Injectable()
 export class UserService {
@@ -50,7 +50,7 @@ export class UserService {
     return user;
   }
 
-  async getUserWithTags(userUid: string): Promise<User> {
+  async getUserWithTags(userUid: string): Promise<UserWithPublicTagsDto> {
     const user = await this.userRepository.findByPk(userUid, {
       attributes: { exclude: ['password', 'uid'] },
       include: ['tags'],
@@ -60,7 +60,9 @@ export class UserService {
       throw new NotFoundException(UNEXIST_USER_MSG);
     }
 
-    return user;
+    const tags = mapTagToPublicTagInfo(user.tags);
+
+    return { email: user.email, nickname: user.nickname, tags };
   }
 
   async update(uid: string, updateUserDto: UpdateUserDto): Promise<User> {

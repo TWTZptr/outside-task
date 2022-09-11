@@ -21,6 +21,6 @@ services:
       - '5432:5432'
     restart: always
     volumes:
-      - ./src/pgdata/volume:/var/lib/postgresql/data
+      - ./pgdata/volume:/var/lib/postgresql/data
     env_file:
       - .env

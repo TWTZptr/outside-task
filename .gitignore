@@ -22,4 +22,4 @@ yarn-error.log*
 .env
 .idea
 dist
-src/pgdata/volume
+pgdata/volume

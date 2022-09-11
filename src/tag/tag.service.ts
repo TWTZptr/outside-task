@@ -16,6 +16,7 @@ import {
   USER_IS_NOT_OWNER_OF_TAG_MSG,
 } from './constants';
 import { FindOptions } from 'sequelize/types/model';
+import { FindAllQuery } from './types/find-all-query.type';
 
 @Injectable()
 export class TagService {
@@ -38,8 +39,30 @@ export class TagService {
     }
   }
 
-  async findOne(options: FindOptions<Tag>) {
+  async findOne(options: FindOptions<Tag>): Promise<Tag> {
     return this.tagRepository.findOne(options);
+  }
+
+  findAll(options: FindAllQuery): Promise<Tag[]> {
+    const queryOptions: FindOptions<Tag> & { order: Array<{}> } = { order: [] };
+
+    if (options.length) {
+      queryOptions.limit = options.length;
+    }
+
+    if (options.offset) {
+      queryOptions.offset = options.offset;
+    }
+
+    if (options.sortByOrder) {
+      queryOptions.order.push(['sortOrder', 'ASC']);
+    }
+
+    if (options.sortByName) {
+      queryOptions.order.push(['name', 'ASC']);
+    }
+
+    return this.tagRepository.findAll(queryOptions);
   }
 
   async findOneById(id: number): Promise<TagWithCreatorDto> {
@@ -97,7 +120,9 @@ export class TagService {
   async isTagExistsCheck(id: number): Promise<void> {
     const tag = await this.tagRepository.findByPk(id);
     if (!tag) {
-      throw new BadRequestException(`Tag with id ${id} was not found. Operation is not successful`);
+      throw new BadRequestException(
+        `Tag with id ${id} was not found. Operation is not successful`,
+      );
     }
   }
 }

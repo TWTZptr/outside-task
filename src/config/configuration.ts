@@ -9,9 +9,9 @@ export default () => ({
   },
   DB: {
     USERNAME: process.env.POSTGRES_USER,
-    PASSWORD: process.env.POSTGRESS_PASSWORD,
+    PASSWORD: process.env.POSTGRES_PASSWORD,
     DATABASE: process.env.POSTGRES_DB,
     HOST: process.env.POSTGRES_HOST,
-    PORT: process.env.POSTGRESS_PORT,
+    PORT: process.env.POSTGRES_PORT,
   },
 });

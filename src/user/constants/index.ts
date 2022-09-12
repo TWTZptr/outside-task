@@ -8,3 +8,4 @@ export const UNEXIST_USER_MSG: string = 'User does not exist';
 export const USER_ALREADY_HAS_TAG_MSG: string = 'User already has that tag(s)';
 export const ADD_UNEXIST_TAG_MSG: string = 'Tag(s) with specified id(s) does not exist'
 export const USER_DOES_NOT_HAVE_TAG_MSG: string = 'User does not have this tag';
+export const UNSPECIFIED_TAGS_MSG: string = 'Tags should be specified'

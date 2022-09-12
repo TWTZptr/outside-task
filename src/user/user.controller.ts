@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -19,6 +20,7 @@ import { AddTagsToUserDto } from './dto/add-tags-to-user.dto';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger/dist/decorators';
 import { UserWithPublicTagsDto } from './dto/user-with-public-tags.dto';
 import { User } from './user.model';
+import { UNSPECIFIED_TAGS_MSG } from './constants';
 
 @Controller('user')
 export class UserController {
@@ -63,6 +65,10 @@ export class UserController {
     @AuthorizedUser() userPayload: JwtPayload,
     @Body() addTagsToUserDto: AddTagsToUserDto,
   ) {
+    if (!addTagsToUserDto.tags) {
+      throw new BadRequestException(UNSPECIFIED_TAGS_MSG);
+    }
+
     if (!Array.isArray(addTagsToUserDto.tags)) {
       addTagsToUserDto.tags = [addTagsToUserDto.tags];
     }

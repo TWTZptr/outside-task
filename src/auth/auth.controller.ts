@@ -52,7 +52,6 @@ export class AuthController {
       ),
       sameSite: 'strict',
       httpOnly: true,
-      secure: true,
     });
 
     return {
@@ -69,8 +68,10 @@ export class AuthController {
     response.clearCookie('refreshToken');
   }
 
-  @ApiOperation({ summary: 'Рефреш пары токенов (при наличии куки с рефреш токеном)' })
-  @ApiResponse({ status: 200})
+  @ApiOperation({
+    summary: 'Рефреш пары токенов (при наличии куки с рефреш токеном)',
+  })
+  @ApiResponse({ status: 200 })
   @UseGuards(JwtRefreshAuthGuard)
   @Post('refresh')
   async refreshToken(

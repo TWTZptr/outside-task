@@ -44,6 +44,10 @@ export class TagService {
   }
 
   findAll(options: FindAllQuery): Promise<Tag[]> {
+    if (options.length < 0 || options.offset < 0) {
+      throw new BadRequestException();
+    }
+
     const queryOptions: FindOptions<Tag> & { order: Array<{}> } = { order: [] };
 
     if (options.length) {
